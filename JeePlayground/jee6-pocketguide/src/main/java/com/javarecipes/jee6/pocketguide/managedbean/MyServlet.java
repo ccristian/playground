@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.javarecipes.jee6.pocketguide.managedbean;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.inject.Inject;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.SessionCookieConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,13 +22,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "MyServlet", urlPatterns = {"/MyServlet"})
 public class MyServlet extends HttpServlet {
-    
+
     @Inject
     SessionBean sessionBean;
-    
+
     @Inject
     ManagedBean managedBean;
-            
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,19 +41,24 @@ public class MyServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        String param = request.getParameter("x");
         PrintWriter out = response.getWriter();
+        ServletContext context = request.getServletContext();
+        //context.getSessionCookieConfig().setHttpOnly(true);
+                
         try {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MyServlet</title>");            
+            out.println("<title>Servlet MyServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet MyServlet at " + request.getContextPath() + "</h1>");
             out.println("<h1>Servlet MyServlet message from  " + sessionBean.message() + "</h1>");
             out.println("<h1>Servlet MyServlet message from " + managedBean.message() + "</h1>");
-            
+            out.println("<h1>Parameter x received " + param + "</h1>");
+
             out.println("</body>");
             out.println("</html>");
         } finally {
@@ -73,6 +78,7 @@ public class MyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         processRequest(request, response);
     }
 

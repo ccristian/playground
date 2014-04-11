@@ -12,13 +12,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author cristianchiovari
  */
-@WebServlet(name = "LogoutServlet", urlPatterns = {"/LogoutServlet"})
-public class LogoutServlet extends HttpServlet {
+@WebServlet(name = "LogoutServletWithSession", urlPatterns = {"/LogoutServletWithSession"})
+public class LogoutServletWithSession extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,21 +33,22 @@ public class LogoutServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
-        Cookie loginCookie = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("user")) {
-                    loginCookie = cookie;
+                if (cookie.getName().equals("JSESSIONID")) {
+                    System.out.println("JSESSIONID=" + cookie.getValue());
                     break;
                 }
             }
         }
-        if (loginCookie != null) {
-            //loginCookie.setMaxAge(0);
-            //response.addCookie(loginCookie);
+        //invalidate the session if exists
+        HttpSession session = request.getSession(false);
+        System.out.println("User=" + session.getAttribute("user"));
+        if (session != null) {
+            session.invalidate();
         }
-        response.sendRedirect("login.html");
+        response.sendRedirect("loginWithSession.html");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

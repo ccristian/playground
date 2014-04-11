@@ -6,19 +6,25 @@
 package com.javarecipes.servletcookiesample;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author cristianchiovari
  */
-@WebServlet(name = "LogoutServlet", urlPatterns = {"/LogoutServlet"})
-public class LogoutServlet extends HttpServlet {
+@WebServlet(name = "LoginServletWithSession", urlPatterns = {"/LoginServletWithSession"})
+public class LoginServletWithSession extends HttpServlet {
+
+    private final String userID = "cris";
+    private final String password = "cris";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,22 +37,24 @@ public class LogoutServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html");
-        Cookie loginCookie = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("user")) {
-                    loginCookie = cookie;
-                    break;
-                }
-            }
+        // get request parameters for userID and password
+        String user = request.getParameter("user");
+        String pwd = request.getParameter("pwd");
+        if (userID.equals(user) && password.equals(pwd)) {
+            HttpSession session = request.getSession();
+            session.setAttribute("user", "cris");
+            //setting session to expiry in 30 mins
+            session.setMaxInactiveInterval(30 * 60);
+            Cookie userName = new Cookie("user", user);
+            userName.setMaxAge(30 * 60);
+            response.addCookie(userName);
+            response.sendRedirect("LoginSuccessWithSession.jsp");
+        } else {
+            RequestDispatcher rd = getServletContext().getRequestDispatcher("/loginWithSession.html");
+            PrintWriter out = response.getWriter();
+            out.println("<font color=red>Wrong username or password.</font>");
+            rd.include(request, response);
         }
-        if (loginCookie != null) {
-            //loginCookie.setMaxAge(0);
-            //response.addCookie(loginCookie);
-        }
-        response.sendRedirect("login.html");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -33,11 +33,7 @@ public class AsyncLongRunningServlet extends HttpServlet {
  
         request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
  
-        String time = request.getParameter("time");
-        int secs = Integer.valueOf(time);
-        // max 10 seconds
-        if (secs > 10000)
-            secs = 10000;
+
  
         AsyncContext asyncCtx = request.startAsync();
         asyncCtx.addListener(new AppAsyncListener());
@@ -46,7 +42,7 @@ public class AsyncLongRunningServlet extends HttpServlet {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) request
                 .getServletContext().getAttribute("executor");
  
-        executor.execute(new AsyncRequestProcessor(asyncCtx, secs));
+        executor.execute(new AsyncRequestProcessor(asyncCtx, System.currentTimeMillis()));
         long endTime = System.currentTimeMillis();
         System.out.println("AsyncLongRunningServlet End::Name="
                 + Thread.currentThread().getName() + "::ID="

@@ -23,9 +23,7 @@ public class AppAsyncListener implements AsyncListener {
     @Override
     public void onComplete(AsyncEvent asyncEvent) throws IOException {
         System.out.println("AppAsyncListener onComplete");
-        Long t = (Long)asyncEvent.getSuppliedRequest().getAttribute("starttime");
-        System.out.println("Real time :"+(System.currentTimeMillis()-t));
-        // we can do resource cleanup activity here
+        
     }
 
     @Override

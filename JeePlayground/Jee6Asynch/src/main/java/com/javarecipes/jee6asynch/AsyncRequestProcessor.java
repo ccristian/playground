@@ -17,49 +17,41 @@ import javax.servlet.AsyncContext;
 public class AsyncRequestProcessor implements Runnable {
 
     private AsyncContext asyncContext;
-    private int secs;
+    private long startTime;
 
     public AsyncRequestProcessor() {
     }
 
-    public AsyncRequestProcessor(AsyncContext asyncCtx, int secs) {
+    public AsyncRequestProcessor(AsyncContext asyncCtx, long secs) {
         this.asyncContext = asyncCtx;
-        this.secs = secs;
+        this.startTime = secs;
     }
 
     @Override
     public void run() {
         System.out.println("Async Supported? "
                 + asyncContext.getRequest().isAsyncSupported());
-        long t1= System.currentTimeMillis();
-        longCpuProcessing(secs);
-         long t2= System.currentTimeMillis();
+        long t1 = System.currentTimeMillis();
+        longCpuProcessing();
+        long t2 = System.currentTimeMillis();
         if (asyncContext != null && asyncContext.getResponse() != null) {
             try {
 
                 PrintWriter out = asyncContext.getResponse().getWriter();
-                String message = "Processing done for " + (t2-t1) + " milliseconds!!";
+                String message = "Processing done for " + (t2 - t1) + " milliseconds!!";
                 System.out.println(message);
                 out.write(message);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            System.out.println("Real time :" + (System.currentTimeMillis() - startTime));
             asyncContext.complete();
         }
         //complete the processing
 
     }
 
-    private void longProcessing(int secs) {
-        // wait for given time before finishing
-        try {
-            Thread.sleep(secs);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private void longCpuProcessing(int secs) {
+    private void longCpuProcessing() {
         // wait for given time before finishing
         try {
             for (int i = 0; i < 100000000; i++) {
